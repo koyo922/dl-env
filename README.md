@@ -12,6 +12,8 @@ Docker files for my jupyter notebook/lab configuration
 	* TensorFlow1.3/Keras
 	* numpy/pandas
 	* ...
+* time zone default to Asia/Shanghai
+* latest version of jupyter lab
 * keyword-binding set to: `vim`
 * a default password
 * batteries-included nbextensions
@@ -23,13 +25,12 @@ mkdir -p ~/tf_notebook/
 chmod -R 777 ~/tf_notebook/
 # note that the directory should be readable for `jovyan` user inside docker
 # the 'jupyter lab' mode is nice, but does not support nbextensions, which is inconvinient for vim users
-# drop out the last line(`start.sh jupyter lab`) to use the default ENTRYPOINT(`start-notebook.sh`), 
-# which fires up a classic jupyter notebook server
-# or click Help/Start Classic Notebook at anytime, or modify the url from .../lab/ to .../notebook/
+# click Help/Start Classic Notebook at anytime, or modify the url from .../lab/ to .../notebook/ to use classic mode
+# add something like `-e "TZ=Asia/Shanghai"` and rebuild the image, if you need to use another time zone setting
 docker run --name tf_notebook -d -p 8888:8888 \
 	-v ~/tf_notebook:/home/jovyan/work \
-	koyo922/my_jupyter_lab_docker \
-	start.sh jupyter lab # this line is omissible
+	koyo922/my_jupyter_lab_docker
+# remeber to relogin after restarting the container, password is needed only at the first time
 ```
 
 ## Reference
