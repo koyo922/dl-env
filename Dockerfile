@@ -18,8 +18,13 @@ COPY ./pip.conf /home/jovyan/.pip/
 # CRITICAL TO CHOWN, OR ELSE NBEXTENSIONS WILL NOT WORK
 RUN chown -R jovyan:users /home/jovyan/
 
-# upgrade packages
+# install python2 kernel
 USER jovyan
+RUN conda create -n py27 python=2.7 ipykernel \
+	&& source activate py27 \
+	&& python -m ipykernel install --user
+
+# upgrade packages
 RUN pip install -U jupyterlab pandas numpy scipy
 
 # install nbextensions_configurator & default nbextensions

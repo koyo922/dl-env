@@ -18,6 +18,7 @@ Docker files for my jupyter notebook/lab configuration
 * a default password
 * batteries-included nbextensions
 * auto-build at https://hub.docker.com/r/koyo922/my_jupyter_lab_docker/
+* also a Python2.7 kernel for Jupyter
 
 ## Usage
 ```bash
