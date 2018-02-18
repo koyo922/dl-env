@@ -1,0 +1,42 @@
+[user]
+	name = QIAN Weishuo
+	email = koyo922@qq.com
+[color]
+    ui = true
+    diff = true
+    status = true
+    branch = true
+    interactive = true
+[alias]
+    st = status
+    co = checkout
+    cm = commit
+    br = branch
+    unstage = reset HEAD
+    lg = log --all --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+	df = diff
+	dc = diff --cached
+[push]
+    default = simple
+[merge]
+	tool = vimdiff
+[mergetool]
+	prompt = false
+[core]
+	excludesfile = ~/.gitignore_global
+	editor = vim
+	quotepath = false
+	preloadindex = true
+	fscache = true
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[gui]
+	encoding = utf-8
+[i18n]
+	commitencoding = utf-8
+[gc]
+	auto = 256

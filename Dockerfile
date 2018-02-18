@@ -10,17 +10,39 @@ RUN echo $TZ > /etc/timezone && \
 	dpkg-reconfigure -f noninteractive tzdata && \
 	apt-get clean
 
+# add conda/pip installed packages into LD_LIBRARY_PATH
+# http://blog.csdn.net/u011534057/article/details/51659999
+# http://blog.csdn.net/l297969586/article/details/76590055
+RUN echo "/opt/conda/lib/" >> /etc/ld.so.conf && \
+	ldconfig
+
+# NOT NEEDED for py2 conda env, nor root env
+# add /usr/lib/x86_64-linux-gnu/ to libpath for anaconda ld, during pysndfile install
+# https://github.com/cocodataset/cocoapi/issues/94
+# cd /opt/conda/envs/py35-pyannote-audio/compiler_compat/ && mv ld ld.bin
+# vi ld
+# #!/bin/sh
+# /opt/conda/envs/py35-pyannote-audio/compiler_compat/ld.bin -L/usr/lib/x86_64-linux-gnu/ $*
+# chmod +x ld
+
 # setting vim key-mode for jupyter lab (not of much use) and default password
 COPY ./commands.jupyterlab-settings /home/jovyan/.jupyter/lab/user-settings/@jupyterlab/codemirror-extension/
 COPY ./jupyter_notebook_config.json /home/jovyan/.jupyter/
 # set aliyun mirror for PyPI
 COPY ./pip.conf /home/jovyan/.pip/
+# git
+COPY ./.gitconfig /home/jovyan/
+# set Tsinghua-Univ mirror for conda
+# https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/
+RUN conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ && \
+	conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ && \
+	conda config --set show_channel_urls yes
 # CRITICAL TO CHOWN, OR ELSE NBEXTENSIONS WILL NOT WORK
 RUN chown -R jovyan:users /home/jovyan/
 
 # install python2 kernel
 USER jovyan
-RUN conda create -n py27 python=2.7 ipykernel \
+RUN conda create -n py27 python=2.7 ipykernel numpy scipy pandas \
 	&& source activate py27 \
 	&& python -m ipykernel install --user
 
