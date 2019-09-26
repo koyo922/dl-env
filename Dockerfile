@@ -1,50 +1,53 @@
-FROM jupyter/tensorflow-notebook
+FROM pytorch/pytorch:latest
 
-# default TimeZone
+#-------------------- setting zh_CN.UTF-8 & TimeZone & install conda for py3
 USER root
 ENV TZ=Asia/Shanghai
-RUN echo $TZ > /etc/timezone && \
+RUN apt-get update && apt-get install -y language-pack-zh-hans && \
+	echo $TZ > /etc/timezone && \
 	apt-get update && apt-get install -y tzdata && \
 	rm /etc/localtime && \
 	ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
 	dpkg-reconfigure -f noninteractive tzdata && \
 	apt-get clean
+RUN conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ && \
+	conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ && \
+	conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/ && \
+	conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/ && \
+	conda config --set show_channel_urls yes && \
+	conda clean -ya
 
-# setting vim key-mode for jupyter lab (not of much use) and default password
-COPY ./commands.jupyterlab-settings /home/jovyan/.jupyter/lab/user-settings/@jupyterlab/codemirror-extension/
-COPY ./jupyter_notebook_config.json /home/jovyan/.jupyter/
-# set aliyun mirror for PyPI
-COPY ./pip.conf /home/jovyan/.pip/
-# CRITICAL TO CHOWN, OR ELSE NBEXTENSIONS WILL NOT WORK
-RUN chown -R jovyan:users /home/jovyan/
+#-------------------- configuring user
+RUN useradd -u 1000 -U -p ubuntu ubuntu && \
+	mkdir -p /home/ubuntu && chown -R ubuntu /home/ubuntu
+USER ubuntu
+ENV HOME /home/ubuntu
 
-# install python2 kernel
-USER jovyan
-RUN conda create -n py27 python=2.7 ipykernel \
-	&& source activate py27 \
-	&& python -m ipykernel install --user
+#-------------------- configuring pip, jupyter
+RUN mkdir -p $HOME/.pip/ && \
+	printf '[global]\ntrusted-host = mirrors.aliyun.com\nindex-url = http://mirrors.aliyun.com/pypi/simple' > $HOME/.pip/pip.conf
+ENV PATH="$HOME/.local/bin:${PATH}"
+RUN pip install --user jupyter_contrib_nbextensions && \
+	jupyter contrib nbextension install --user && \
+	jupyter nbextensions_configurator enable --user
+RUN pip install --user \
+	Cython tensorflow pandas scikit-learn matplotlib seaborn jupyter jupyter_tensorboard \
+	torchvision scikit-image pyfunctional tqdm enlighten 
 
-# upgrade packages
-RUN pip install -U jupyterlab pandas numpy scipy
+# setting default password
+RUN printf '{\n\
+  "NotebookApp": {\n\
+    "password": "sha1:e81dbc5d18c8:7c2d1ed88e9114fd17e30f1dffc35e66f6e20340"\n\
+  }\n\
+}' > $HOME/.jupyter/jupyter_notebook_config.json 
 
-# install nbextensions_configurator & default nbextensions
-RUN pip install jupyter_contrib_nbextensions \
-	&& jupyter contrib nbextension install --user \
-	&& jupyter nbextensions_configurator enable --user
+#-------------------- configuring port & cmd
+# tensorboard
+EXPOSE 6006
+# jupyter notebook
+EXPOSE 8888
+# more ports
+EXPOSE 22 80 443 8000-9000
 
-# enabling vim_binding (only classic mode works)
-RUN mkdir -p $(jupyter --data-dir)/nbextensions \
-	&& cd $(jupyter --data-dir)/nbextensions \
-	&& git clone https://github.com/lambdalisue/jupyter-vim-binding vim_binding \
-	&& chmod -R go-w vim_binding \
-	&& jupyter nbextension enable freeze/main \
-	&& jupyter nbextension enable codefolding/edit \
-	&& jupyter nbextension enable toc2/main \
-	&& jupyter nbextension enable collapsible_headings/main \
-	&& jupyter nbextension enable highlighter/highlighter \
-	&& jupyter nbextension enable notify/notify \
-	&& jupyter nbextension enable table_beautifier/main \
-	&& jupyter nbextension enable vim_binding/vim_binding
-
-# lab mode does not support nbextensions, which is not convinient
-ENTRYPOINT ["start.sh", "jupyter", "lab"]
+COPY start.sh /
+CMD ["/start.sh"]
