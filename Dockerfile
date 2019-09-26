@@ -32,12 +32,16 @@ RUN pip install --user jupyter_contrib_nbextensions && \
 	jupyter nbextensions_configurator enable --user
 RUN pip install --user \
 	Cython tensorflow pandas scikit-learn matplotlib seaborn jupyter jupyter_tensorboard \
-	torchvision scikit-image pyfunctional tqdm enlighten 
+	torchvision scikit-image pyfunctional tqdm enlighten fastai
 
 # setting default password
 RUN printf '{\n\
   "NotebookApp": {\n\
-    "password": "sha1:e81dbc5d18c8:7c2d1ed88e9114fd17e30f1dffc35e66f6e20340"\n\
+    "nbserver_extensions": {\n\
+      "jupyter_nbextensions_configurator": true,\n\
+      "jupyter_tensorboard": true\n\
+    }, \n\
+	"password": "sha1:e81dbc5d18c8:7c2d1ed88e9114fd17e30f1dffc35e66f6e20340"\n\
   }\n\
 }' > $HOME/.jupyter/jupyter_notebook_config.json 
 
