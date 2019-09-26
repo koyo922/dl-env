@@ -30,9 +30,14 @@ ENV PATH="$HOME/.local/bin:${PATH}"
 RUN pip install --user jupyter_contrib_nbextensions && \
 	jupyter contrib nbextension install --user && \
 	jupyter nbextensions_configurator enable --user
+RUN jupyter nbextension enable codemirror_mode_extensions/main && \
+	jupyter nbextension enable toc2/main
+
 RUN pip install --user \
 	Cython tensorflow pandas scikit-learn matplotlib seaborn jupyter jupyter_tensorboard \
 	torchvision scikit-image pyfunctional tqdm enlighten fastai
+RUN pip install --user \
+	pytorch_pretrained_bert
 
 # setting default password
 RUN printf '{\n\
@@ -41,7 +46,7 @@ RUN printf '{\n\
       "jupyter_nbextensions_configurator": true,\n\
       "jupyter_tensorboard": true\n\
     }, \n\
-	"password": "sha1:e81dbc5d18c8:7c2d1ed88e9114fd17e30f1dffc35e66f6e20340"\n\
+  "password": "sha1:e81dbc5d18c8:7c2d1ed88e9114fd17e30f1dffc35e66f6e20340"\n\
   }\n\
 }' > $HOME/.jupyter/jupyter_notebook_config.json 
 
