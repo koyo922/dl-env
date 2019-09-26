@@ -1,16 +1,18 @@
 # jupyter-fastai
 
 Docker files for my jupyter notebook configuration with fastai
-**开箱即用** 的jupyter notebook 环境(含有支持CUDA的PyTorch, fastai)
+
+**开箱即用的jupyter notebook 环境(含有支持CUDA的PyTorch, fastai)**
 
 ## Features
 
 - common packages included(via base Docker image):
-	* Python3.6/Anaconda
-	* PyTorch latest
-	* fastai
-	* numpy/pandas
-	* ...
+	- Python3.6/Anaconda
+	- PyTorch latest
+- extra packages
+	- fastai
+	- numpy/pandas
+	- ...
 - time zone default to Asia/Shanghai
 - a default password
 - GUI-based `nbextension_configurator`
@@ -24,9 +26,9 @@ mkdir -p ~/workspace
 nvidia-docker run -it --rm -d -p 8888:8888 -p 8000-8100:8000-8100 \
 	-u $(id -u ${USER}):$(id -g ${USER}) \
 	-v $PWD:/workspace \
-	--name mytorch \
+	--name jf \
 	koyo922/jupyter-fastai
-# remeber to relogin after restarting the container, password is needed only at the first time
+# remeber to re-login after restarting the container, password is needed only at the first time
 ```
 
 ## Reference
