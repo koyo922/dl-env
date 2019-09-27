@@ -23,12 +23,16 @@ Docker files for my deep learning env.
 
 ```bash
 mkdir -p ~/workspace && cd ~/workspace
-nvidia-docker run -it --rm -d -p 8888:8888 -p 8000-8100:8000-8100 \
+# GPU机器请参考这里安装nvidia-docker https://zhuanlan.zhihu.com/p/76464450
+# CPU机器请将下面的 nvidia-docker 换成 docker
+nvidia-docker run -it --rm -p 8888:8888 -p 8000-8100:8000-8100 \
 	-u $(id -u ${USER}):$(id -g ${USER}) \
 	-v $PWD:/workspace \
 	--name dl \
 	koyo922/dl-env
 # remeber to re-login after restarting the container, password is needed only at the first time
+
+# 注意在notebook中安装新包需要 pip install --user ...
 ```
 
 ## Reference
