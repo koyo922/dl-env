@@ -1,6 +1,6 @@
 # dl-env
 
-Docker files for my deep learning env.
+Docker files for my deep learning env, with CUDA-supported-PyTorch, fastai, Tensorflow, Keras etc.
 
 **开箱即用的深度学习环境(含有 jupyter notebook, 支持CUDA的PyTorch, fastai, Tensorflow, Keras, etc. )**
 
@@ -25,8 +25,6 @@ Docker files for my deep learning env.
 
 ```bash
 mkdir -p ~/workspace/home/me && cd ~/workspace
-# nvidia-driver参考官网正常安装即可。阿里云上除`vgn5i`以外的GPU机器都支持自动安装驱动和CUDA，启动实例时勾上就好
-# nvidia-docker请参考这里安装 https://zhuanlan.zhihu.com/p/76464450
 nvidia-docker run -it -p 8888:8888 -p 8000-8100:8000-8100 \
 	-u $(id -u ${USER}):$(id -g ${USER}) \
 	-v $PWD:/workspace -v $PWD/home/me:/home/me -w /workspace \
@@ -37,11 +35,15 @@ nvidia-docker run -it -p 8888:8888 -p 8000-8100:8000-8100 \
 ```
 
 Note:
-- Default password is `apeman`, to change it need 2 steps:
-	1. open a new bash, run `docker exec -it dl jupyter notebook password`, and type your new password twice.
-	2. save any pending modifications of you notebooks, then `docker restart dl`
-	3. [optional] to see the realtime log; return to the original bash where you started container, run `docker attach dl`
+- How to access the jupyter server
+	1. read the docker container output
+	2. look for something like `http://(4cd7fac856a5 or 127.0.0.1):8888/?token=4c5bf6171097f89ced23ed52a84aced0f6f7e3a24b777554`
+	3. copy it to you web browser address bar
+	4. modify the hostname part `(4cd7fac856a5 or 127.0.0.1)` with its Internet IP
+	5. hit enter
 - To install new packages in notebooks, you need `pip install --user ...`
+- `nvidia-driver` 参考官网正常安装即可。阿里云上除`vgn5i`以外的GPU机器都支持自动安装驱动和CUDA，启动实例时勾上就好
+- `nvidia-docker` 请参考这里安装 https://zhuanlan.zhihu.com/p/76464450
 
 ## Reference
 
