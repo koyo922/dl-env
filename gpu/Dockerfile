@@ -1,24 +1,35 @@
-FROM pytorch/pytorch:latest
+FROM tensorflow/tensorflow:latest-gpu-py3-jupyter
 
-#-------------------- setting zh_CN.UTF-8 & TimeZone
+#-------------------- setting apt & zh_CN.UTF-8 & TimeZone
 USER root
 ENV TZ=Asia/Shanghai
-RUN apt-get update && apt-get install -y language-pack-zh-hans && \
+
+# 注意这是 Ubuntu18.04 不是 16.04
+RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
+	printf '\
+deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse\n\
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse\n\
+deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse\n\
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse\n\
+deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse\n\
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse\n\
+deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse\n\
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse\n\
+deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse\n\
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse\n\
+' > /etc/apt/sources.list && \
+	apt-get update
+
+RUN apt-get install -y language-pack-zh-hans && \
 	echo $TZ > /etc/timezone && \
-	apt-get update && apt-get install -y tzdata && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata && \
 	rm /etc/localtime && \
 	ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
 	dpkg-reconfigure -f noninteractive tzdata && \
 	apt-get clean
 
 
-#-------------------- configuring conda, pip, jupyter
-RUN conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/ && \
-	conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/ && \
-	conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/ && \
-	conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/pytorch/ && \
-	conda config --set show_channel_urls yes && \
-	conda clean -ya
+#-------------------- configuring pip, jupyter
 # 让root用户使用内部镜像
 RUN mkdir -p $HOME/.pip/ && \
 	printf '[global]\ntrusted-host = mirrors.aliyun.com\nindex-url = http://mirrors.aliyun.com/pypi/simple' > $HOME/.pip/pip.conf
@@ -33,7 +44,7 @@ RUN pip install Cython
 # 数据
 RUN pip install pandas scikit-learn matplotlib seaborn jupyter jupyter_tensorboard scikit-image
 # DL框架
-RUN pip install pytorch-nlp fastai pytorch_pretrained_bert tensorflow keras
+RUN pip install torch pytorch-nlp fastai pytorch_pretrained_bert keras
 # 补充
 RUN pip install pyfunctional fn tqdm enlighten
 
