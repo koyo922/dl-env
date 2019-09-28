@@ -24,8 +24,9 @@ Docker files for my deep learning env, with CUDA-supported-PyTorch, fastai, Tens
 ## Usage
 
 ```bash
-mkdir -p ~/workspace/home/me && cd ~/workspace
-nvidia-docker run -it -p 8888:8888 -p 8000-8100:8000-8100 \
+mkdir -p ~/workspace/home/me && cd ~/workspace  # CAUTION, IT IS NECESSARY
+
+nvidia-docker run -it --rm -p 8888:8888 -p 8000-8100:8000-8100 \
 	-u $(id -u ${USER}):$(id -g ${USER}) \
 	-v $PWD:/workspace -v $PWD/home/me:/home/me -w /workspace \
 	--name dl \

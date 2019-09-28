@@ -20,7 +20,9 @@ deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted univer
 ' > /etc/apt/sources.list && \
 	apt-get update
 
-RUN apt-get install -y language-pack-zh-hans && \
+# `locales-all` is NECESSARY, or else `export LANG=en_US.UTF-8` would resolve to
+# a non-exist locale, which causes `locale.getpreferredencoding() == 'ANSI_X3.4-1968'`
+RUN apt-get install -y locales-all language-pack-zh-hans && \
 	echo $TZ > /etc/timezone && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata && \
 	rm /etc/localtime && \
@@ -49,7 +51,13 @@ RUN pip install torch pytorch-nlp fastai pytorch_pretrained_bert keras
 RUN pip install pyfunctional fn tqdm enlighten
 
 
-#-------------------- configuring port & cmd
+#-------------------- configuring env & port & cmd
+ENV LANG="en_US.UTF-8"
+ENV LC_ALL="en_US.UTF-8"
+ENV HOME=/home/me
+# allow current user to use the local executables
+ENV PATH="$HOME/.local/bin:${PATH}"
+
 # tensorboard
 EXPOSE 6006
 # jupyter notebook
