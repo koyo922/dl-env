@@ -29,7 +29,7 @@ mkdir -p ~/workspace && cd ~/workspace
 # nvidia-docker请参考这里安装 https://zhuanlan.zhihu.com/p/76464450
 nvidia-docker run -it -p 8888:8888 -p 8000-8100:8000-8100 \
 	-u $(id -u ${USER}):$(id -g ${USER}) \
-	-v $PWD:/workspace \
+	-v $PWD:/workspace -w /workspace \
 	--name dl \
 	koyo922/dl-env:gpu
 
