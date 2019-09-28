@@ -24,12 +24,12 @@ Docker files for my deep learning env.
 ## Usage
 
 ```bash
-mkdir -p ~/workspace && cd ~/workspace
+mkdir -p ~/workspace/home/me && cd ~/workspace
 # nvidia-driver参考官网正常安装即可。阿里云上除`vgn5i`以外的GPU机器都支持自动安装驱动和CUDA，启动实例时勾上就好
 # nvidia-docker请参考这里安装 https://zhuanlan.zhihu.com/p/76464450
 nvidia-docker run -it -p 8888:8888 -p 8000-8100:8000-8100 \
 	-u $(id -u ${USER}):$(id -g ${USER}) \
-	-v $PWD:/workspace -w /workspace \
+	-v $PWD:/workspace -v $PWD/home/me:/home/me -w /workspace \
 	--name dl \
 	koyo922/dl-env:gpu
 
@@ -38,8 +38,8 @@ nvidia-docker run -it -p 8888:8888 -p 8000-8100:8000-8100 \
 
 Note:
 - Default password is `apeman`, to change it need 2 steps:
-	1. Open a new bash, run `docker exec -u root -it dl bash -c 'jupyter notebook password && chmod -R 1777 /home/me/'`, and type your new password twice.
-	2. then `docker restart dl`
+	1. open a new bash, run `docker exec -it dl jupyter notebook password`, and type your new password twice.
+	2. save any pending modifications of you notebooks, then `docker restart dl`
 	3. [optional] to see the realtime log; return to the original bash where you started container, run `docker attach dl`
 - To install new packages in notebooks, you need `pip install --user ...`
 
