@@ -2,7 +2,7 @@
 
 Docker files for my deep learning env.
 
-**开箱即用的深度学习环境(含有 jupyter notebook, 支持CUDA的PyTorch, fastai, etc. )**
+**开箱即用的深度学习环境(含有 jupyter notebook, 支持CUDA的PyTorch, fastai, Tensorflow, Keras, etc. )**
 
 ## Features
 
@@ -25,15 +25,19 @@ Docker files for my deep learning env.
 mkdir -p ~/workspace && cd ~/workspace
 # GPU机器请参考这里安装nvidia-docker https://zhuanlan.zhihu.com/p/76464450
 # CPU机器请将下面的 nvidia-docker 换成 docker
-nvidia-docker run -it --rm -p 8888:8888 -p 8000-8100:8000-8100 \
+nvidia-docker run -it -p 8888:8888 -p 8000-8100:8000-8100 \
 	-u $(id -u ${USER}):$(id -g ${USER}) \
 	-v $PWD:/workspace \
 	--name dl \
 	koyo922/dl-env
-# remeber to re-login after restarting the container, password is needed only at the first time
-
-# 注意在notebook中安装新包需要 pip install --user ...
 ```
+
+Note:
+- Default password is `apeman`, to change it need 2 steps:
+	1. Open a new bash, run `docker exec -u root -it dl bash -c 'jupyter notebook password && chmod -R 1777 /home/me/'`, and type your new password twice.
+	2. then `docker restart dl`
+	3. [optional] to see the realtime log; return to the original bash where you started container, run `docker attach dl`
+- To install new packages in notebooks, you need `pip install --user ...`
 
 ## Reference
 
