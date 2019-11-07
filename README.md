@@ -19,19 +19,20 @@ Docker files for my deep learning env, with CUDA-supported-PyTorch, fastai, Tens
 - a default password
 - GUI-based `nbextension_configurator`
 - auto-build at https://hub.docker.com/r/koyo922/dl-env/
-- NOTE: add something like `-e "TZ=Asia/Shanghai"` and rebuild the image, if you need to use another time zone setting
+- NB: add something like `-e "TZ=Asia/Shanghai"` and rebuild the image, if you need to use another time zone setting
 
 ## Usage
 
 ```bash
-mkdir -p ~/workspace/home/me && cd ~/workspace  # CAUTION, IT IS NECESSARY
+mkdir -p ~/workspace/home/me && cd ~/workspace  # NB: IT IS NECESSARY
 
-nvidia-docker run -it --rm -p 8888:8888 -p 8000-8100:8000-8100 \
+docker run --gpus all -it -p 8888:8888 -p 8000-8100:8000-8100 \
 	-u $(id -u ${USER}):$(id -g ${USER}) \
 	-v $PWD:/workspace -v $PWD/home/me:/home/me -w /workspace \
 	--name dl \
 	koyo922/dl-env:gpu
 
+# for older version `docker`, use `nvidia-docker run` instead of `docker run --gpus all`
 # for CPU machine, please modify the above `nvidia-docker` into `docker`, and `koyo922/dl-env:gpu` into `koyo922/dl-env:cpu`
 ```
 
