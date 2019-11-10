@@ -18,4 +18,4 @@ jupyter nbextension enable select_keymap/main
 jupyter nbextension enable toc2/main
 
 jupyter tensorboard enable --user
-jupyter notebook --no-browser --ip=0.0.0.0 --port=8888
+jupyter notebook --no-browser --ip=0.0.0.0 --port=8888 --NotebookApp.iopub_data_rate_limit=2147483647
